@@ -6,7 +6,8 @@ import '../../../accounts/presentation/screens/accounts_screen.dart';
 import '../../../transactions/presentation/screens/transactions_screen.dart';
 import '../../../budgets/presentation/screens/budgets_screen.dart';
 import '../../../reports/presentation/screens/reports_screen.dart';
-import '../../../settings/presentation/screens/settings_screen.dart';
+import 'more_menu_screen.dart';
+import '../../../transactions/presentation/widgets/add_transaction_modal.dart';
 
 class MainNavigationShell extends ConsumerStatefulWidget {
   const MainNavigationShell({super.key});
@@ -25,8 +26,17 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
     TransactionsScreen(),
     BudgetsScreen(),
     ReportsScreen(),
-    SettingsScreen(),
+    MoreMenuScreen(),
   ];
+
+  void _openAddTransactionSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const AddTransactionModal(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +45,12 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
     if (isDesktop) {
       // Desktop / Web / macOS Navigation Rail (Sidebar)
       return Scaffold(
+        floatingActionButton: FloatingActionButton.extended(
+          backgroundColor: const Color(0xFF6C63FF),
+          onPressed: _openAddTransactionSheet,
+          icon: const Icon(Icons.add, color: Colors.white),
+          label: const Text('Quick Add', style: TextStyle(color: Colors.white)),
+        ),
         body: Row(
           children: [
             NavigationRail(
@@ -77,9 +93,9 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
                   label: Text('Reports'),
                 ),
                 NavigationRailDestination(
-                  icon: Icon(Icons.settings_outlined),
-                  selectedIcon: Icon(Icons.settings),
-                  label: Text('Settings'),
+                  icon: Icon(Icons.menu_outlined),
+                  selectedIcon: Icon(Icons.menu),
+                  label: Text('More'),
                 ),
               ],
             ),
@@ -96,6 +112,12 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
         index: _currentIndex,
         children: _screens,
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF6C63FF),
+        onPressed: _openAddTransactionSheet,
+        child: const Icon(Icons.add, color: Colors.white, size: 28),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
@@ -128,9 +150,9 @@ class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
             label: 'Reports',
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.grid_view_rounded),
+            selectedIcon: Icon(Icons.grid_view_rounded),
+            label: 'More',
           ),
         ],
       ),
