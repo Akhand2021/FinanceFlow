@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../providers/auth_notifier.dart';
 import '../widgets/auth_text_field.dart';
+import '../../../../core/utils/toast_utils.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -49,10 +50,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     ref.listen(authNotifierProvider, (previous, next) {
       if (next.error != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.error!)));
+        ToastUtils.showError(context, next.error!);
       } else if (next.isAuthenticated) {
+        ToastUtils.showSuccess(context, 'Account created successfully!');
         context.go('/dashboard');
       }
     });
@@ -179,10 +179,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     onPressed: authState.isLoading || !_agreeToTerms
                         ? null
                         : () {
+                            if (_passwordController.text !=
+                                _confirmPasswordController.text) {
+                              ToastUtils.showError(
+                                  context, 'Passwords do not match.');
+                              return;
+                            }
                             authNotifier.register(
-                              email: _emailController.text,
-                              firstName: _firstNameController.text,
-                              lastName: _lastNameController.text,
+                              email: _emailController.text.trim(),
+                              firstName: _firstNameController.text.trim(),
+                              lastName: _lastNameController.text.trim(),
                               password: _passwordController.text,
                               confirmPassword: _confirmPasswordController.text,
                             );

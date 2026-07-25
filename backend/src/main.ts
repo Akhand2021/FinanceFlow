@@ -14,8 +14,10 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Global prefix
-  app.setGlobalPrefix('api/v1');
+  // Global prefix with root healthcheck exclusions for cloud load balancers
+  app.setGlobalPrefix('api/v1', {
+    exclude: ['/', '/health'],
+  });
 
   // Global validation pipe
   app.useGlobalPipes(
@@ -38,6 +40,7 @@ async function bootstrap() {
     .setDescription('Personal Finance Management API - Track. Save. Grow.')
     .setVersion('1.0.0')
     .addBearerAuth()
+    .addTag('Health & Status')
     .addTag('Auth')
     .addTag('Users')
     .addTag('Accounts')
@@ -47,7 +50,6 @@ async function bootstrap() {
     .addTag('Savings')
     .addTag('Loans')
     .addTag('Reports')
-    .addTag('Notifications')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

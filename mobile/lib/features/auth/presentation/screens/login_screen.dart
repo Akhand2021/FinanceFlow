@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../providers/auth_notifier.dart';
 import '../widgets/auth_text_field.dart';
+import '../../../../core/utils/toast_utils.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -38,10 +39,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     ref.listen(authNotifierProvider, (previous, next) {
       if (next.error != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.error!)));
+        ToastUtils.showError(context, next.error!);
       } else if (next.isAuthenticated) {
+        ToastUtils.showSuccess(context, 'Login successful! Welcome back.');
         context.go('/dashboard');
       }
     });
@@ -128,8 +128,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: authState.isLoading
                         ? null
                         : () {
+                            if (_emailController.text.trim().isEmpty ||
+                                _passwordController.text.trim().isEmpty) {
+                              ToastUtils.showError(
+                                  context, 'Please enter email and password.');
+                              return;
+                            }
                             authNotifier.login(
-                              email: _emailController.text,
+                              email: _emailController.text.trim(),
                               password: _passwordController.text,
                             );
                           },

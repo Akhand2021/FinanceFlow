@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../models/user_model.dart';
 import '../models/auth_tokens_model.dart';
-import '../../domain/entities/user_entity.dart';
+import '../../../../core/utils/toast_utils.dart';
 
 abstract class AuthRemoteDatasource {
   Future<(UserModel, AuthTokensModel)> register({
@@ -64,7 +64,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
 
       return (user, tokens);
     } catch (e) {
-      rethrow;
+      throw Exception(ToastUtils.extractErrorMessage(e));
     }
   }
 
@@ -85,7 +85,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
 
       return (user, tokens);
     } catch (e) {
-      rethrow;
+      throw Exception(ToastUtils.extractErrorMessage(e));
     }
   }
 
@@ -100,7 +100,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       final tokens = AuthTokensModel.fromJson(response.data['data']);
       return tokens;
     } catch (e) {
-      rethrow;
+      throw Exception(ToastUtils.extractErrorMessage(e));
     }
   }
 
@@ -109,7 +109,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     try {
       await dio.post('/auth/logout');
     } catch (e) {
-      rethrow;
+      throw Exception(ToastUtils.extractErrorMessage(e));
     }
   }
 
@@ -120,7 +120,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       final user = UserModel.fromJson(response.data['data']);
       return user;
     } catch (e) {
-      rethrow;
+      throw Exception(ToastUtils.extractErrorMessage(e));
     }
   }
 
@@ -129,7 +129,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     try {
       await dio.post('/auth/forgot-password', data: {'email': email});
     } catch (e) {
-      rethrow;
+      throw Exception(ToastUtils.extractErrorMessage(e));
     }
   }
 
@@ -149,7 +149,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         },
       );
     } catch (e) {
-      rethrow;
+      throw Exception(ToastUtils.extractErrorMessage(e));
     }
   }
 }

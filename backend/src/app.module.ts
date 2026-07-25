@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
+import { AppController } from './app.controller';
 import { DatabaseModule } from '@database/database.module';
 import { CommonModule } from '@common/common.module';
 import { ResponseInterceptor } from '@common/interceptors/response.interceptor';
@@ -37,6 +38,7 @@ import { UsersModule } from '@modules/users/users.module';
     ReportsModule,
     UsersModule,
   ],
+  controllers: [AppController],
   providers: [
     {
       provide: APP_INTERCEPTOR,

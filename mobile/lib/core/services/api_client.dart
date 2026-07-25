@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ApiClient {
   final Dio _dio;
-  static const String baseUrl = 'http://localhost:3000/api/v1';
+  static const String baseUrl = 'https://financeflow-backend-psu1.onrender.com/api/v1';
 
   ApiClient({Dio? dio})
     : _dio =
