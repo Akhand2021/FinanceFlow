@@ -33,6 +33,15 @@ class CategoriesNotifier extends StateNotifier<AsyncValue<List<CategoryEntity>>>
       rethrow;
     }
   }
+
+  Future<void> deleteCategory(String id) async {
+    try {
+      await datasource.deleteCategory(id);
+      await fetchCategories();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
 
 final categoriesNotifierProvider =
