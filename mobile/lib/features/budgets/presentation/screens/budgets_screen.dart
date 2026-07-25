@@ -80,7 +80,10 @@ class BudgetsScreen extends ConsumerWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Current Budget Limit', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                                Expanded(
+                                  child: Text('Current Budget Limit', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+                                ),
+                                const SizedBox(width: 8),
                                 ElevatedButton.icon(
                                   icon: const Icon(Icons.add, size: 18),
                                   label: const Text('New Budget'),
@@ -103,7 +106,10 @@ class BudgetsScreen extends ConsumerWidget {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          const Text('Category Budget', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                          const Expanded(
+                                            child: Text('Category Budget', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16), overflow: TextOverflow.ellipsis),
+                                          ),
+                                          const SizedBox(width: 8),
                                           Text(
                                             '${CurrencyUtils.format(item.spent)} / ${CurrencyUtils.format(item.limitAmount)}',
                                             style: TextStyle(
@@ -182,7 +188,10 @@ class BudgetsScreen extends ConsumerWidget {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(g.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                        Expanded(
+                                          child: Text(g.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), overflow: TextOverflow.ellipsis),
+                                        ),
+                                        const SizedBox(width: 8),
                                         Text(
                                           '${(pct * 100).toStringAsFixed(0)}%',
                                           style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2ECC71)),

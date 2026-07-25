@@ -66,12 +66,15 @@ class AccountsScreen extends ConsumerWidget {
                           style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          CurrencyUtils.format(totalBalance, currency: accounts.isNotEmpty ? accounts.first.currency : 'INR'),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            CurrencyUtils.format(totalBalance, currency: accounts.isNotEmpty ? accounts.first.currency : 'INR'),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -98,16 +101,21 @@ class AccountsScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Your Connected Accounts',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                      Expanded(
+                        child: Text(
+                          'Your Accounts',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.add, size: 18),
                         label: const Text('Add Account'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF6C63FF),
                           foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         onPressed: () => _showAddAccountDialog(context, ref),
@@ -165,6 +173,7 @@ class AccountsScreen extends ConsumerWidget {
                           title: Text(
                             account.name,
                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            overflow: TextOverflow.ellipsis,
                           ),
                           subtitle: Text('${account.type} • ${account.currency}'),
                           trailing: Text(
@@ -203,13 +212,13 @@ class AccountsScreen extends ConsumerWidget {
                 controller: nameController,
                 decoration: const InputDecoration(
                   labelText: 'Account Name',
-                  hintText: 'e.g. HDFC Bank, Chase Checking, Cash Wallet',
+                  hintText: 'e.g. HDFC Bank, Cash Wallet',
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: selectedType,
+                initialValue: selectedType,
                 decoration: const InputDecoration(labelText: 'Account Type', border: OutlineInputBorder()),
                 items: const [
                   DropdownMenuItem(value: 'CHECKING', child: Text('Checking / Bank Account')),
@@ -222,7 +231,7 @@ class AccountsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: selectedCurrency,
+                initialValue: selectedCurrency,
                 decoration: const InputDecoration(labelText: 'Currency', border: OutlineInputBorder()),
                 items: const [
                   DropdownMenuItem(value: 'INR', child: Text('INR (₹) - Indian Rupee')),
