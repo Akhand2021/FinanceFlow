@@ -196,7 +196,7 @@ class AccountsScreen extends ConsumerWidget {
   void _showAddAccountDialog(BuildContext context, WidgetRef ref) {
     final nameController = TextEditingController();
     final balanceController = TextEditingController();
-    String selectedType = 'CHECKING';
+    String selectedType = 'BANK';
     String selectedCurrency = 'INR';
 
     showDialog(
@@ -221,10 +221,11 @@ class AccountsScreen extends ConsumerWidget {
                 initialValue: selectedType,
                 decoration: const InputDecoration(labelText: 'Account Type', border: OutlineInputBorder()),
                 items: const [
-                  DropdownMenuItem(value: 'CHECKING', child: Text('Checking / Bank Account')),
-                  DropdownMenuItem(value: 'SAVINGS', child: Text('Savings Account')),
+                  DropdownMenuItem(value: 'BANK', child: Text('Bank Account (Checking / Savings)')),
                   DropdownMenuItem(value: 'CREDIT_CARD', child: Text('Credit Card')),
+                  DropdownMenuItem(value: 'DIGITAL_WALLET', child: Text('Digital Wallet (Paytm / PhonePe)')),
                   DropdownMenuItem(value: 'CASH', child: Text('Cash Wallet')),
+                  DropdownMenuItem(value: 'UPI', child: Text('UPI Account')),
                   DropdownMenuItem(value: 'INVESTMENT', child: Text('Investment Portfolio')),
                 ],
                 onChanged: (val) => setState(() => selectedType = val!),

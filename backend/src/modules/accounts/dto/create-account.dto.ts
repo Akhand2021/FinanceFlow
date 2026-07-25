@@ -10,6 +10,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum AccountType {
   BANK = 'BANK',
+  CHECKING = 'CHECKING',
+  SAVINGS = 'SAVINGS',
   CREDIT_CARD = 'CREDIT_CARD',
   DIGITAL_WALLET = 'DIGITAL_WALLET',
   CASH = 'CASH',
