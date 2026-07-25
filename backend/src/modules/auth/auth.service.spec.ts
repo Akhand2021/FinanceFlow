@@ -30,6 +30,23 @@ describe('AuthService', () => {
     deletedAt: null,
   });
 
+  const mockRawUser = {
+    id: '550e8400-e29b-41d4-a716-446655440000',
+    email: 'test@example.com',
+    passwordHash: 'hashedPassword123',
+    firstName: 'John',
+    lastName: 'Doe',
+    profilePicture: null,
+    currency: 'USD',
+    language: 'en',
+    theme: 'light',
+    pinnedLocked: false,
+    biometricLocked: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -39,6 +56,8 @@ describe('AuthService', () => {
           useValue: {
             findById: jest.fn(),
             findByEmail: jest.fn(),
+            findRawByEmail: jest.fn(),
+            mapToEntity: jest.fn().mockReturnValue(mockUserEntity),
             create: jest.fn(),
             update: jest.fn(),
             updatePassword: jest.fn(),
@@ -137,8 +156,7 @@ describe('AuthService', () => {
         password: 'SecurePass123',
       };
 
-      jest.spyOn(userRepository, 'findByEmail').mockResolvedValue(mockUserEntity);
-      jest.spyOn(userRepository, 'findById').mockResolvedValue(mockUserEntity);
+      jest.spyOn(userRepository, 'findRawByEmail').mockResolvedValue(mockRawUser);
       jest.spyOn(utilsService, 'comparePassword').mockResolvedValue(true);
       jest.spyOn(jwtService, 'signAsync').mockResolvedValue('token123');
       jest.spyOn(userRepository, 'createRefreshToken').mockResolvedValue(undefined);
@@ -157,7 +175,7 @@ describe('AuthService', () => {
         password: 'WrongPassword',
       };
 
-      jest.spyOn(userRepository, 'findByEmail').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'findRawByEmail').mockResolvedValue(null);
 
       await expect(service.login(loginDto)).rejects.toThrow(
         UnauthorizedException,
@@ -170,8 +188,7 @@ describe('AuthService', () => {
         password: 'WrongPassword',
       };
 
-      jest.spyOn(userRepository, 'findByEmail').mockResolvedValue(mockUserEntity);
-      jest.spyOn(userRepository, 'findById').mockResolvedValue(mockUserEntity);
+      jest.spyOn(userRepository, 'findRawByEmail').mockResolvedValue(mockRawUser);
       jest.spyOn(utilsService, 'comparePassword').mockResolvedValue(false);
 
       await expect(service.login(loginDto)).rejects.toThrow(

@@ -74,26 +74,22 @@ export class AuthService {
     user: UserEntity;
     tokens: AuthTokensDto;
   }> {
-    // Find user
-    const user = await this.userRepository.findByEmail(loginDto.email);
-    if (!user || user.deletedAt) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    // Fetch raw user record for password comparison
-    const rawUser = await this.userRepository.findById(user.id);
-    if (!rawUser) {
+    // Find raw user record containing passwordHash
+    const rawUser = await this.userRepository.findRawByEmail(loginDto.email);
+    if (!rawUser || rawUser.deletedAt) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const isPasswordValid = await this.utilsService.comparePassword(
       loginDto.password,
-      (user as any).passwordHash || (rawUser as any).passwordHash || '',
+      rawUser.passwordHash,
     );
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    const user = this.userRepository.mapToEntity(rawUser);
 
     // Generate tokens
     const tokens = await this.generateTokens(user.id, user.email);
@@ -125,7 +121,7 @@ export class AuthService {
     try {
       // Verify refresh token
       const payload = await this.jwtService.verifyAsync(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
+        secret: process.env.JWT_SECRET,
       });
 
       // Check if token is revoked

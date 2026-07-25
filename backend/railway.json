@@ -9,5 +9,3 @@
     "restartPolicyType": "ON_FAILURE"
   }
 }
-
-postgresql: //financeflow_user:5rwhxlpl1qsCshbBhXH9jkU5jvt6ytOC@dpg-d9iam3f41pts73aujtv0-a.oregon-postgres.render.com/financeflow_a0lv

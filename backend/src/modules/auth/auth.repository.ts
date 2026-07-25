@@ -30,6 +30,18 @@ export class UserRepository {
     return this.mapToEntity(user);
   }
 
+  async findRawByEmail(email: string): Promise<any | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user || user.deletedAt) {
+      return null;
+    }
+
+    return user;
+  }
+
   async create(data: {
     email: string;
     firstName: string;
@@ -150,7 +162,7 @@ export class UserRepository {
     }
   }
 
-  private mapToEntity(user: any): UserEntity {
+  mapToEntity(user: any): UserEntity {
     return new UserEntity({
       id: user.id,
       email: user.email,
@@ -169,4 +181,3 @@ export class UserRepository {
     });
   }
 }
-
