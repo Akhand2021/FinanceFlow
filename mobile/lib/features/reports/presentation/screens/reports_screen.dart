@@ -9,7 +9,7 @@ class ReportsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final healthState = ref.watch(healthScoreNotifierProvider);
-    final healthScore = healthState.value;
+    final healthScore = healthState.valueOrNull;
 
     return Scaffold(
       appBar: AppBar(

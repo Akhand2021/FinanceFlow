@@ -9,7 +9,7 @@ class AccountsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accountsAsync = ref.watch(accountsNotifierProvider);
-    final accounts = accountsAsync.value ?? [];
+    final accounts = accountsAsync.valueOrNull ?? [];
 
     return Scaffold(
       appBar: AppBar(

@@ -9,7 +9,7 @@ class TransactionsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
-    final transactions = transactionsAsync.value ?? [];
+    final transactions = transactionsAsync.valueOrNull ?? [];
 
     return Scaffold(
       appBar: AppBar(

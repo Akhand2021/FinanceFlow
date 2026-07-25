@@ -12,8 +12,8 @@ class BudgetsScreen extends ConsumerWidget {
     final budgetsAsync = ref.watch(budgetsNotifierProvider);
     final savingsAsync = ref.watch(savingsNotifierProvider);
 
-    final budget = budgetsAsync.value;
-    final goals = savingsAsync.value ?? [];
+    final budget = budgetsAsync.valueOrNull;
+    final goals = savingsAsync.valueOrNull ?? [];
 
     return DefaultTabController(
       length: 2,

@@ -10,7 +10,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(settingsNotifierProvider);
-    final settings = settingsAsync.value;
+    final settings = settingsAsync.valueOrNull;
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(

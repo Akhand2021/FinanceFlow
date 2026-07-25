@@ -1,11 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'local_storage_service.dart';
+import '../providers/providers.dart';
+
 class ApiClient {
   final Dio _dio;
   static const String baseUrl = 'https://financeflow-backend-psu1.onrender.com/api/v1';
 
-  ApiClient({Dio? dio})
+  ApiClient({Dio? dio, LocalStorageService? localStorageService})
     : _dio =
           dio ??
           Dio(
@@ -21,7 +24,13 @@ class ApiClient {
           ) {
     _dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) {
+        onRequest: (options, handler) async {
+          if (localStorageService != null) {
+            final token = await localStorageService.getAccessToken();
+            if (token != null && token.isNotEmpty) {
+              options.headers['Authorization'] = 'Bearer $token';
+            }
+          }
           return handler.next(options);
         },
         onResponse: (response, handler) {
@@ -98,5 +107,6 @@ class ApiClient {
 }
 
 final apiClientProvider = Provider<Dio>((ref) {
-  return ApiClient().dio;
+  final localStorage = ref.watch(localStorageServiceProvider);
+  return ApiClient(localStorageService: localStorage).dio;
 });
