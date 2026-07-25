@@ -5,7 +5,7 @@ import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
-import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../../features/navigation/presentation/screens/main_navigation_shell.dart';
 import '../../features/auth/presentation/providers/auth_notifier.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -31,7 +31,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/dashboard',
         name: 'dashboard',
-        builder: (context, state) => const DashboardScreen(),
+        builder: (context, state) => const MainNavigationShell(),
       ),
     ],
     redirect: (context, state) {

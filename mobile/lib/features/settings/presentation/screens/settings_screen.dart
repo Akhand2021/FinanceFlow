@@ -1,0 +1,162 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../auth/presentation/providers/auth_notifier.dart';
+import '../providers/settings_provider.dart';
+
+class SettingsScreen extends ConsumerWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settingsAsync = ref.watch(settingsNotifierProvider);
+    final settings = settingsAsync.value;
+    final authState = ref.watch(authNotifierProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings & Security'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Profile Header Card
+          Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(16),
+              leading: CircleAvatar(
+                radius: 28,
+                backgroundColor: const Color(0xFF6C63FF),
+                child: Text(
+                  authState.user?.firstName.isNotEmpty == true
+                      ? authState.user!.firstName[0].toUpperCase()
+                      : 'U',
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              title: Text(
+                '${authState.user?.firstName ?? 'User'} ${authState.user?.lastName ?? ''}',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              subtitle: Text(authState.user?.email ?? 'user@financeflow.com'),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          const Text('PREFERENCES',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  fontSize: 12)),
+          const SizedBox(height: 8),
+
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.attach_money_rounded),
+                  title: const Text('Primary Currency'),
+                  trailing: Text(
+                    settings?.currency ?? 'USD',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.language_rounded),
+                  title: const Text('Language'),
+                  trailing: Text(
+                    settings?.language ?? 'English',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.palette_outlined),
+                  title: const Text('App Theme'),
+                  trailing: Text(
+                    settings?.theme ?? 'System',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          const Text('SECURITY & PRIVACY',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  fontSize: 12)),
+          const SizedBox(height: 8),
+
+          Card(
+            child: Column(
+              children: [
+                SwitchListTile(
+                  secondary: const Icon(Icons.pin_outlined),
+                  title: const Text('PIN Lock'),
+                  subtitle: const Text('Require PIN on app startup'),
+                  value: settings?.pinnedLocked ?? false,
+                  onChanged: (val) {
+                    ref.read(settingsNotifierProvider.notifier).updateSettings({
+                      'pinnedLocked': val,
+                    });
+                  },
+                ),
+                const Divider(height: 1),
+                SwitchListTile(
+                  secondary: const Icon(Icons.fingerprint_rounded),
+                  title: const Text('Biometric Lock'),
+                  subtitle: const Text('FaceID / TouchID security'),
+                  value: settings?.biometricLocked ?? false,
+                  onChanged: (val) {
+                    ref.read(settingsNotifierProvider.notifier).updateSettings({
+                      'biometricLocked': val,
+                    });
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.download_outlined),
+                  title: const Text('Export Account Data'),
+                  subtitle: const Text('Download full JSON backup'),
+                  onTap: () {
+                    // Export JSON backup
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Logout Button
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.logout, color: Colors.red),
+              label: const Text('Logout',
+                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Colors.red),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () {
+                ref.read(authNotifierProvider.notifier).logout();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
