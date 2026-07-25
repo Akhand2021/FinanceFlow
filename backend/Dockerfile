@@ -24,5 +24,5 @@ RUN npm run build
 # Expose port
 EXPOSE 3000
 
-# Start production server
-CMD ["npm", "run", "start:prod"]
+# Push Prisma schema to live database & start production server
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss && npm run start:prod"]
