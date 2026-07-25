@@ -1,0 +1,13 @@
+{
+    "collection": "@nestjs/schematics",
+    "sourceRoot": "src",
+    "monorepo": false,
+    "root": ".",
+    "compilerOptions": {
+        "webpack": false,
+        "tsConfigPath": "tsconfig.json",
+        "assets": [
+            "src/common/assets/**/*"
+        ]
+    }
+}

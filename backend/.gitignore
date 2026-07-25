@@ -1,0 +1,56 @@
+# NestJS Backend - Git Ignore
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Generated
+dist/
+.env
+.env.local
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+.prisma/
+
+# Testing
+.nyc_output/
+coverage/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
+.env.*.local
+.cache/
+*.pid
+*.seed
+*.pid.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock

@@ -1,0 +1,33 @@
+module.exports = {
+  moduleFileExtensions: ['js', 'json', 'ts'],
+  rootDir: 'src',
+  testRegex: '.*\\.spec\\.ts$',
+  transform: {
+    '^.+\\.(t|j)s$': 'ts-jest',
+  },
+  collectCoverageFrom: [
+    '**/*.(t|j)s',
+    '!**/*.spec.ts',
+    '!**/node_modules/**',
+    '!**/test/**',
+  ],
+  coverageDirectory: '../coverage',
+  testEnvironment: 'node',
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1',
+    '^@common/(.*)$': '<rootDir>/common/$1',
+    '^@config/(.*)$': '<rootDir>/common/config/$1',
+    '^@database/(.*)$': '<rootDir>/database/$1',
+    '^@modules/(.*)$': '<rootDir>/modules/$1',
+    '^@auth/(.*)$': '<rootDir>/modules/auth/$1',
+    '^@users/(.*)$': '<rootDir>/modules/users/$1',
+    '^@accounts/(.*)$': '<rootDir>/modules/accounts/$1',
+    '^@transactions/(.*)$': '<rootDir>/modules/transactions/$1',
+    '^@categories/(.*)$': '<rootDir>/modules/categories/$1',
+    '^@budgets/(.*)$': '<rootDir>/modules/budgets/$1',
+    '^@savings/(.*)$': '<rootDir>/modules/savings/$1',
+    '^@loans/(.*)$': '<rootDir>/modules/loans/$1',
+    '^@reports/(.*)$': '<rootDir>/modules/reports/$1',
+  },
+  roots: ['<rootDir>', '<rootDir>/../test'],
+};

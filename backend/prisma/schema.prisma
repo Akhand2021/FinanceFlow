@@ -1,0 +1,417 @@
+// Prisma schema for FinanceFlow
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  phone               String?   @unique
+  passwordHash        String
+  firstName           String
+  lastName            String
+  profilePicture      String?
+  
+  // Settings
+  currency            String    @default("USD")
+  language            String    @default("en")
+  theme               String    @default("light")
+  pinnedLocked        Boolean   @default(false)
+  biometricLocked     Boolean   @default(false)
+  
+  // Relations
+  accounts            Account[]
+  categories          Category[]
+  transactions        Transaction[]
+  budgets             Budget[]
+  savingGoals         SavingGoal[]
+  loans               Loan[]
+  merchantRules       MerchantRule[]
+  notifications       Notification[]
+  refreshTokens       RefreshToken[]
+  auditLogs           AuditLog[]
+  devices             Device[]
+  receipts            Receipt[]
+  smsPending          SmsPending[]
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime? // Soft delete
+  
+  @@index([email])
+  @@index([phone])
+}
+
+model Account {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name                String
+  type                String    // BANK, CREDIT_CARD, DIGITAL_WALLET, CASH
+  balance             Decimal   @default(0)
+  currency            String    @default("USD")
+  bankName            String?
+  accountNumber       String?   @unique
+  routingNumber       String?
+  
+  // Relations
+  transactions        Transaction[]
+  loanPayments        LoanPayment[]
+  
+  isDefault           Boolean   @default(false)
+  color               String?   @default("0xFF6C63FF")
+  icon                String?
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime? // Soft delete
+  
+  @@index([userId])
+  @@index([accountNumber])
+}
+
+model Category {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name                String
+  type                String    // INCOME, EXPENSE, TRANSFER
+  icon                String?
+  color               String?   @default("0xFF8E8DFF")
+  
+  // Relations
+  transactions        Transaction[]
+  budgetItems         BudgetItem[]
+  
+  isDefault           Boolean   @default(false)
+  isActive            Boolean   @default(true)
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime? // Soft delete
+  
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([type])
+}
+
+model Transaction {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  accountId           String
+  account             Account   @relation(fields: [accountId], references: [id])
+  
+  categoryId          String
+  category            Category  @relation(fields: [categoryId], references: [id])
+  
+  type                String    // INCOME, EXPENSE, TRANSFER
+  amount              Decimal
+  description         String?
+  merchant            String?
+  
+  // For transfers
+  toAccountId         String?
+  
+  // Receipt
+  receiptId           String?
+  receipt             Receipt?  @relation(fields: [receiptId], references: [id])
+  
+  // Status
+  isPending           Boolean   @default(false)
+  isRecurring         Boolean   @default(false)
+  recurringPattern    String?   // DAILY, WEEKLY, MONTHLY, YEARLY
+  
+  // Metadata
+  tags                String[]  @default([])
+  notes               String?
+  
+  date                DateTime
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime? // Soft delete
+  
+  @@index([userId])
+  @@index([accountId])
+  @@index([categoryId])
+  @@index([date])
+  @@index([type])
+}
+
+model Budget {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name                String
+  amount              Decimal
+  month               DateTime  // Month and year for which this budget is set
+  isActive            Boolean   @default(true)
+  alertThreshold      Int       @default(80) // Alert when spent > 80%
+  
+  // Relations
+  items               BudgetItem[]
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime? // Soft delete
+  
+  @@unique([userId, month])
+  @@index([userId])
+}
+
+model BudgetItem {
+  id                  String    @id @default(uuid())
+  budgetId            String
+  budget              Budget    @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  
+  categoryId          String
+  category            Category  @relation(fields: [categoryId], references: [id])
+  
+  limitAmount         Decimal
+  spent               Decimal   @default(0)
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  @@unique([budgetId, categoryId])
+  @@index([budgetId])
+  @@index([categoryId])
+}
+
+model SavingGoal {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name                String
+  description         String?
+  targetAmount        Decimal
+  currentAmount       Decimal   @default(0)
+  icon                String?
+  color               String?   @default("0xFF2ECC71")
+  
+  targetDate          DateTime?
+  priority            String    @default("MEDIUM") // LOW, MEDIUM, HIGH
+  
+  // Relations
+  contributions       GoalContribution[]
+  
+  isActive            Boolean   @default(true)
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime? // Soft delete
+  
+  @@index([userId])
+}
+
+model GoalContribution {
+  id                  String    @id @default(uuid())
+  goalId              String
+  goal                SavingGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  
+  amount              Decimal
+  note                String?
+  
+  createdAt           DateTime  @default(now())
+  
+  @@index([goalId])
+}
+
+model Loan {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name                String
+  type                String    // HOME_LOAN, PERSONAL_LOAN, CAR_LOAN, CREDIT_CARD, BORROWED, LENT
+  lender              String?
+  principal           Decimal
+  currentAmount       Decimal
+  interestRate        Decimal   // As percentage
+  emiAmount           Decimal?
+  
+  startDate           DateTime
+  endDate             DateTime?
+  
+  // Relations
+  payments            LoanPayment[]
+  
+  isActive            Boolean   @default(true)
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime? // Soft delete
+  
+  @@index([userId])
+  @@index([type])
+}
+
+model LoanPayment {
+  id                  String    @id @default(uuid())
+  loanId              String
+  loan                Loan      @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  
+  accountId           String
+  account             Account   @relation(fields: [accountId], references: [id])
+  
+  amount              Decimal
+  principalAmount     Decimal?
+  interestAmount      Decimal?
+  note                String?
+  
+  dueDate             DateTime?
+  paidDate            DateTime?
+  isPaid              Boolean   @default(false)
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  @@index([loanId])
+  @@index([accountId])
+  @@index([isPaid])
+}
+
+model MerchantRule {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  merchantName        String
+  categoryId          String    // Learned category
+  confidence          Float     @default(0.8) // ML confidence score
+  
+  @@unique([userId, merchantName])
+  @@index([userId])
+  @@index([merchantName])
+}
+
+model SmsPending {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  smsContent          String
+  extractedMerchant   String?
+  extractedAmount     Decimal?
+  extractedDate       DateTime?
+  extractedAccount    String?
+  
+  status              String    @default("PENDING") // PENDING, ACCEPTED, REJECTED, IGNORED
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+}
+
+model Notification {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type                String    // BUDGET_EXCEEDED, EMI_REMINDER, GOAL_REMINDER, SALARY_REMINDER
+  title               String
+  message             String
+  data                Json?
+  
+  isRead              Boolean   @default(false)
+  sentAt              DateTime  @default(now())
+  readAt              DateTime?
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([isRead])
+}
+
+model Device {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  deviceId            String    @unique
+  deviceName          String?
+  deviceType          String    // iOS, Android, Web
+  osVersion           String?
+  appVersion          String?
+  
+  fcmToken            String?   // Firebase Cloud Messaging token
+  
+  isActive            Boolean   @default(true)
+  lastActiveAt        DateTime  @default(now())
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  @@index([userId])
+}
+
+model Receipt {
+  id                  String    @id @default(uuid())
+  userId              String?
+  user                User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  imageUrl            String
+  extractedText       String?
+  total               Decimal?
+  items               String[]  @default([])
+  extractedDate       DateTime?
+  
+  // Relations
+  transactions        Transaction[]
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  @@index([userId])
+}
+
+model RefreshToken {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token               String    @unique
+  expiresAt           DateTime
+  revokedAt           DateTime?
+  
+  createdAt           DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([token])
+}
+
+model AuditLog {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  action              String    // CREATE, UPDATE, DELETE, READ
+  entity              String    // Transaction, Budget, Loan, etc.
+  entityId            String?
+  changes             Json?     // What changed
+  ipAddress           String?
+  userAgent           String?
+  
+  createdAt           DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+}
